@@ -1,0 +1,26 @@
+# Allow-list: only code, docs, and canonical checkpoints are tracked.
+/*
+!/.gitignore
+!/README.md
+!/requirements.txt
+!/src/
+!/scripts/
+!/outputs/
+!/assets/
+
+# Canonical trained checkpoints only (outputs/<dataset>/*.pt)
+/outputs/*
+!/outputs/ffpc_match/
+!/outputs/bdb_match/
+!/outputs/nba_match/
+!/outputs/ffpc_pass/
+/outputs/*/**
+!/outputs/*/*.pt
+
+# Local-only scripts
+/scripts/cross_provider_area_table.py
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
