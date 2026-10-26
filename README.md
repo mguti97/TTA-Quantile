@@ -16,7 +16,7 @@
 
 Code for the ACCV 2026 paper *Learning Human Sports Motion Feasibility via
 Quantile Regression on Tracking Data* (citation below): a quantile
-(τ=0.05) MLP that predicts the **empirical minimum time** for a player to reach
+(τ=0.01) MLP that predicts the **empirical minimum time** for a player to reach
 any point on the pitch, given their current kinematic state. Developed on
 PFF FC football tracking (FIFA World Cup 2022), and evaluated cross-sport on NFL
 (Big Data Bowl 2019) and NBA (SportVU) tracking.
@@ -47,7 +47,7 @@ HDF5 tracking ─► clean ─► sample ─► transform ─► SUVAT filter �
 |---|---|---|
 | Load | `src/data_loader.py` | reads provider tracking into a shared `Match`, exposes per-(player, segment) views |
 | Clean | `src/pipeline/cleaning.py` | gap-aware run segmentation, Savitzky-Golay smoothing, finite-difference derivatives, physics clipping |
-| Sample | `src/pipeline/sampling.py` | dense (state, future-position, Δt) tuples over the 0.25–8 s training window |
+| Sample | `src/pipeline/sampling.py` | dense (state, future-position, Δt) tuples over the 0.10–8 s training window |
 | Features | `src/pipeline/features.py` | translate+rotate into heading frame → 6 normalised features |
 | Baseline | `src/pipeline/suvat.py` | two-phase SUVAT physics model (noise filter + benchmark) |
 | Model | `src/model/{mlp,loss,train,arealoss}.py` | 6→64→64→1 Softplus MLP, pinball loss + area-aware auxiliary loss, early stopping (+ profile variant: base 6 + per-player `vmax`) |
@@ -137,16 +137,12 @@ ablation: `scripts/ablate_passer_velocity.py`).
 The full PFF dataset trained end-to-end: 154 M samples, **match-level split**
 (45 train / 10 val / 9 test). Test set = **9 unseen matches, 21.5 M samples**.
 
-| model | test MAE | test RMSE | test pinball | coverage (target 0.95) |
-|---|---|---|---|---|
-| SUVAT (physics) | 1.951 s | 2.259 s | 0.09755 | 1.000 |
-| **MLP (τ=0.05)** | 1.357 s | 1.703 s | **0.07524** | 0.952 |
-
-The MLP beats SUVAT by ~0.6 s in **every** distance / speed / angle stratum, on
-unseen matches and teams. Calibration is
-excellent at scale: feature-conditioned **and** predicted-time coverage are flat
-~0.95; the by-true-time ramp (0.82 → 1.00) is the expected
-conditioning-on-outcome artifact.
+The model is trained with the pinball loss at **τ = 0.01** plus the area-aware
+auxiliary loss (`AREA_LAM = 0.01`), i.e. a 99 % coverage target. Held-out
+metrics — coverage together with reachable area at Δt ∈ {1, …, 5} s, and the
+cross-sport transfer tables — are reported in the paper; reproduce them with
+`scripts.evaluate`, `scripts.eval_reachable_area` and
+`scripts.cross_sport_area_table`.
 
 ## Citation
 
