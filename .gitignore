@@ -1,0 +1,48 @@
+# Allow-list: only code, docs, and canonical checkpoints are tracked.
+/*
+!/.gitignore
+!/README.md
+!/requirements.txt
+!/src/
+!/scripts/
+!/outputs/
+!/assets/
+
+# Canonical trained checkpoints only (explicit allow-list)
+/outputs/*
+!/outputs/ffpc_match/
+!/outputs/bdb_match/
+!/outputs/nba_match/
+!/outputs/ffpc_pass/
+/outputs/*/**
+!/outputs/bdb_match/mlp.pt
+!/outputs/bdb_match/mlp_tau0.01.pt
+!/outputs/ffpc_match/mlp_arealoss_lam0.01.pt
+!/outputs/ffpc_match/mlp_arealoss_lam0.01_smoothj.pt
+!/outputs/ffpc_match/mlp_arealoss_lam0.01_smooth.pt
+!/outputs/ffpc_match/mlp_nofilter.pt
+!/outputs/ffpc_match/mlp_profile_vmax.pt
+!/outputs/ffpc_match/mlp_profile_vmax_vmaxtrain.pt
+!/outputs/ffpc_match/mlp_profile_vmax_vmaxtrain_seed42.pt
+!/outputs/ffpc_match/mlp_profile_vmax_vmaxtrain_seed43.pt
+!/outputs/ffpc_match/mlp_profile_vmax_vmaxtrain_seed44.pt
+!/outputs/ffpc_match/mlp_profile_vmax_vmaxtrain_seed45.pt
+!/outputs/ffpc_match/mlp_profile_vmax_vmaxtrain_seed46.pt
+!/outputs/ffpc_match/mlp.pt
+!/outputs/ffpc_match/mlp_seed42.pt
+!/outputs/ffpc_match/mlp_seed43.pt
+!/outputs/ffpc_match/mlp_seed44.pt
+!/outputs/ffpc_match/mlp_seed45.pt
+!/outputs/ffpc_match/mlp_seed46.pt
+!/outputs/ffpc_match/mlp_tau0.01.pt
+!/outputs/ffpc_pass/mlp_tau0.01.pt
+!/outputs/nba_match/mlp.pt
+!/outputs/nba_match/mlp_tau0.01.pt
+
+# Local-only scripts
+/scripts/cross_provider_area_table.py
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
