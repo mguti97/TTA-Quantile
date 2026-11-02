@@ -3,8 +3,8 @@
 <div align="center">
 
 [![Conference](https://img.shields.io/badge/PDF-ACCV_2026-FBBC04?style=for-the-badge&logo=google-slides&logoColor=black)](PDF_LINK_PLACEHOLDER)
-[![arXiv](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg?style=for-the-badge)](ARXIV_LINK_PLACEHOLDER)
-[![Conference](https://img.shields.io/badge/Preprint-SSRN-6b8bc7.svg?style=for-the-badge)](SSRN_LINK_PLACEHOLDER)
+[![arXiv](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg?style=for-the-badge)](https://arxiv.org/abs/2610.36183)
+
 
 <p align="center">
   <a href="assets/tta-quantile.mp4">
