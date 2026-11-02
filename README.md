@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Conference](https://img.shields.io/badge/PDF-ACCV_2026-FBBC04?style=for-the-badge&logo=google-slides&logoColor=black)](PDF_LINK_PLACEHOLDER)
-[![arXiv](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg?style=for-the-badge)](https://arxiv.org/abs/2610.36183)
+[![arXiv](https://img.shields.io/badge/arXiv-2610.36183-b31b1b.svg?style=for-the-badge)](https://arxiv.org/abs/2610.36183)
 
 
 <p align="center">
