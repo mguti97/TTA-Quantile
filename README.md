@@ -63,6 +63,65 @@ python -m scripts.train           # -> outputs/<dataset>/mlp.pt
 python -m scripts.evaluate        # MAE table + sample heatmap in outputs/<dataset>/
 ```
 
+## Surfaces from your own tracking data
+
+`scripts/compute_surface.py` computes the time-to-arrival surface of every
+player at one frame of a tracking DataFrame, using the shipped checkpoints. No
+dataset build is needed. The input is **forced to the FFPC (PFF FC) format**
+that the `ffpc_match` models were trained on. A long table with one row per
+(frame, player):
+
+| column | type | FFPC convention |
+|---|---|---|
+| `period` | int | 1, 2 (3, 4 = extra time) |
+| `frameNum` | int | frame counter at **29.97 fps**; gaps are allowed (no state is estimated across them) |
+| `team` | str / int | `home` / `away` (or 0 / 1) |
+| `jerseyNum` | int / str | shirt number, unique within a team |
+| `x`, `y` | float | **metres, origin at the pitch centre**, x along the 105 m length, y along the 68 m width |
+| `player_id`, `player_name` | optional | carried through to the output |
+
+```bash
+# csv / parquet / pkl already in FFPC format
+python -m scripts.compute_surface --tracking my_match.parquet --frame 12345 --plot
+
+# other column names / corner origin / other units are coerced, then validated
+python -m scripts.compute_surface --tracking my.csv --frame 900 --period 2 \
+    --rename frame=frameNum side=team shirt=jerseyNum --origin corner --scale 1.0
+
+# raw PFF tracking files work directly
+python -m scripts.compute_surface --tracking "data/ffpc_match/raw/<comp>/Tracking Data/3813.jsonl.bz2" --frame 5000
+```
+
+The script pins `KOGNIA_DATASET=ffpc_match`, cleans each player's track exactly
+as at training time (Savitzky-Golay smoothing, finite-difference velocity and
+acceleration, physics clipping, on ±2 s of context around the frame), and runs
+the 6-feature MLP (default `outputs/ffpc_match/mlp.pt`; any 6-feature checkpoint
+works via `--model`). It writes `outputs/surfaces/<name>_p<period>_f<frame>.npz`:
+
+- `tta` `(n, nx, ny)`: per-player minimum time to reach each 1 m cell (s); `tta[i, ix, iy]` is at `(xs[ix], ys[iy])`.
+- `team_min` `(2, nx, ny)`: the fastest arrival per team (home, away).
+- `team`, `jersey`, `player_id`, `player_name`, `pos`, `vel`, `acc`: one entry per surface row.
+
+The reachable set within a horizon h is `tta[i] <= h`. Optional outputs:
+`--suvat` adds the physics baseline, `--plot` saves a home-vs-away
+first-arrival map, and `--plot-players` saves one heatmap per player.
+Players tracked at the frame but without a valid state (a run shorter than the
+smoothing window, or a state that fails clipping) are reported and skipped.
+`coerce_ffpc` rejects coordinates that are not in a centred 105×68 m frame and
+suggests the fix (`--origin corner`, `--scale`, swapped axes). The frame rate is
+not resampled, so convert other rates to 29.97 fps first.
+
+From Python:
+
+```python
+import os; os.environ["KOGNIA_DATASET"] = "ffpc_match"   # before importing src
+from src.tracking_df import coerce_ffpc, compute_surfaces, load_model
+
+df = coerce_ffpc(my_df, rename={"frame": "frameNum"})
+s = compute_surfaces(df, frame_num=12345, model=load_model("outputs/ffpc_match/mlp.pt", "cpu"))
+s.tta, s.team_min, s.xs, s.ys, s.jersey
+```
+
 ## Datasets
 
 Data lives under `data/<name>/{raw,processed}`, one self-contained folder per
